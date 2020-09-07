@@ -51,7 +51,10 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
         self.data_files = []
         # Bind the function to edit the cell of the file list
         self.table_files.itemChanged.connect(self.handle_user_edit_param)
-        
+
+        # start process
+        self.process_service = ProcessService(self)
+
     def init_table_files(self):
         """Initialization file list table"""
         self.table_files.clear()  # clear the list
@@ -157,6 +160,15 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
             self.btn_import.setDisabled(False)
             self.btn_collate.setDisabled(False)
             self.btn_export.setDisabled(False)
+
+    def handle_start_process(self):
+        """Click the button to start processing"""
+
+        self.btn_import.setDisabled(True)
+        self.btn_collate.setDisabled(True)
+        self.btn_export.setDisabled(True)
+
+        self.procee_service.start()
 
 if __name__ == '__main__':
     import sys
