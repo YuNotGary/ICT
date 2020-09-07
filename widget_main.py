@@ -144,6 +144,19 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
         #  Unblock signal
         self.table_files.blockSignals(False)
 
+    def handle_receive_result(self, index: int, result: list):
+        """Inspection data collation results"""
+        #  If the result exists, mark a new status
+        if result:
+            self.table_files.blockSignals(True)
+            self.table_files.item(index, 2).setText("")
+            self.table_files.blockSignals(False)
+        self.data_files[index][2] = result
+        #  If the result does not exist, the unlock button is operated again
+        if index == len(self.data_files) - 1:
+            self.btn_import.setDisabled(False)
+            self.btn_collate.setDisabled(False)
+            self.btn_export.setDisabled(False)
 
 if __name__ == '__main__':
     import sys
