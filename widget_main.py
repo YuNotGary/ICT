@@ -3,6 +3,8 @@
 from PyQt5 import QtGui, QtCore, QtWidgets
 from ui_design.ui_design import Ui_Form
 import os
+from data_service import ProcessService
+from data_process import export_data
 
 
 class WidgetMain(QtWidgets.QWidget, Ui_Form):
@@ -54,6 +56,14 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
 
         # start process
         self.process_service = ProcessService(self)
+        # Connection result signal
+        self.process_service.sig_result.connect(self.handle_receive_result)
+        # Connection error signal
+        self.process_service.sig_error.connect(self.handle_receive_error)
+        # Connection msg signal
+        self.process_service.sig_msg.connect(self.handle_receive_msg)
+        # A click event that binds the collate
+        self.btn_collate.clicked.connect(self.handle_start_process)
 
     def init_table_files(self):
         """Initialization file list table"""
@@ -161,9 +171,29 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
             self.btn_collate.setDisabled(False)
             self.btn_export.setDisabled(False)
 
+    def handle_receive_error(self, index: int, msg: str):
+        """Received an error encountered while processing data"""
+        self.table_files.blockSignals(True)
+        self.table_files.item(index, 2).setText(msg)
+        self.table_files.blockSignals(False)
+
+    def handle_receive_msg(self, index: int, msg: str):
+        """Receive real-time message of processing data"""
+
+        self.table_files.blockSignals(True)
+        self.table_files.item(index, 2).setText(msg)
+        self.table_files.blockSignals(False)
+
     def handle_start_process(self):
         """Click the button to start processing"""
+        #  get task from datafile list
+        tasks = [[row[0], row[1]] for row in self.data_files]
 
+        print(tasks)
+        print(len(tasks))
+        # Incoming task list
+        self.process_service.reload(tasks)
+        #  Lock button during processing
         self.btn_import.setDisabled(True)
         self.btn_collate.setDisabled(True)
         self.btn_export.setDisabled(True)
