@@ -81,6 +81,12 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
         #  Set the text displayed in the horizontal header in order
         self.table_results.setHorizontalHeaderLabels(['X', 'N'])
 
+    def fill_table_results(self, data: list):
+        """fill results of table"""
+
+    def handle_user_click_files_table(self, item: QtWidgets.QTableWidgetItem):
+        """Click on the file list to display the data and draw the diagram"""
+
     def handle_select_and_import_files(self):
         """Process user selection and import txt files"""
         # Open file and get file list(ls)
@@ -199,6 +205,10 @@ class WidgetMain(QtWidgets.QWidget, Ui_Form):
         self.btn_export.setDisabled(True)
 
         self.procee_service.start()
+
+    def handle_export_results(self):
+        """"""
+
 
 if __name__ == '__main__':
     import sys
