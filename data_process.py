@@ -9,6 +9,13 @@ def process(fp, shiftInput: (int, float) = 1) -> list:
     :param shiftInput: shift value, accept float/int
     :return: list of normalised data
     """
+
+    # todo: please paste your code here
+    # ===========================================
+    # the following code as an example
+    # do not hesitate to delete these and replace them with yours.
+
+
     results = []
     ## Open  file target
     ## specify file name to be used when writing out new data
@@ -201,6 +208,13 @@ def export_data(data: list, output_path: str):
     :param output_path: abs path of output file
     :return:
     """
+
+    # todo: please paste your code here
+    # ===========================================
+    # the following code as an example
+    # do not hesitate to delete these and replace them with yours.
+
+
     with open(output_path, 'w', encoding='utf-8') as f:
         for line in data:
             line = [str(i) for i in line]
@@ -209,5 +223,5 @@ def export_data(data: list, output_path: str):
 
 if __name__ == '__main__':
     fp = 'data/raman_01.txt'
-    r = process(fp, 100)
+    r = process(fp, 100.0)
     print(r)
