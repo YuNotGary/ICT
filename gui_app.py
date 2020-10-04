@@ -33,8 +33,8 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
         # Bind the function to edit the cell of the file list
         self.edit_param.textChanged.connect(self.handle_user_edit_param)
         self.edit_param.setValidator(QtGui.QIntValidator())
-
         self.combo_raw.currentIndexChanged.connect(self.handle_user_choose_raw_file)
+
         self.combo_result.currentIndexChanged.connect(self.handle_user_choose_normalised_file)
         self.btn_normalise.clicked.connect(self.handle_normalise_raw_file)
         self.btn_plot.clicked.connect(self.handle_handle_plot)
@@ -42,12 +42,13 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
 
     def init_table_raw_files(self):
         """Initialize file list table"""
-        table_headers = ['FileName', 'FilePath']
+        table_headers = ['File Name', 'File Path']
         self.table_files.clear()  # clear the list
         self.table_files.setRowCount(0)  # Initial 0 lines
         self.table_files.setColumnCount(len(table_headers))  # Three columns show file status
         #  Set the text displayed in the horizontal header in order
         self.table_files.setHorizontalHeaderLabels(table_headers)
+        self.table_files.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
 
     def init_table_results(self, col: int = None):
         """Initialization result table"""
