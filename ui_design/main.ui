@@ -96,7 +96,7 @@ font: 16pt &quot;Courier&quot;;
        </widget>
        <widget class="QWidget" name="tab_normalise">
         <attribute name="title">
-         <string>Normalise</string>
+         <string>Normalise Data</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
@@ -141,13 +141,13 @@ font: 16pt &quot;Courier&quot;;
        </widget>
        <widget class="QWidget" name="tab_plot">
         <attribute name="title">
-         <string>Plot</string>
+         <string>Plot Data</string>
         </attribute>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,0">
              <item>
               <widget class="QLabel" name="label_result">
                <property name="text">
@@ -157,6 +157,20 @@ font: 16pt &quot;Courier&quot;;
              </item>
              <item>
               <widget class="QComboBox" name="combo_result"/>
+             </item>
+             <item>
+              <widget class="QComboBox" name="combo_typo">
+               <item>
+                <property name="text">
+                 <string>Scatter</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Line</string>
+                </property>
+               </item>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="btn_plot">
