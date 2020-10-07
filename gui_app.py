@@ -4,6 +4,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from ui_design.main import Ui_Form
 from functools import partial
 import os
+from data_process import read_normalised_data
 
 app_name = 'cRaman System'
 
@@ -16,6 +17,7 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle(app_name)  # window title
         self.label_header.setText(app_name)
 
+        self.data_files_to_plot = []
         self.data_files = []
         # Create a new variable storage file path and data
         self.data_current_raw_file: str = None
@@ -33,12 +35,100 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
         # Bind the function to edit the cell of the file list
         self.edit_param.textChanged.connect(self.handle_user_edit_param)
         self.edit_param.setValidator(QtGui.QIntValidator())
-        self.combo_raw.currentIndexChanged.connect(self.handle_user_choose_raw_file)
 
+        self.combo_raw.currentIndexChanged.connect(self.handle_user_choose_raw_file)
         self.combo_result.currentIndexChanged.connect(self.handle_user_choose_normalised_file)
         self.btn_normalise.clicked.connect(self.handle_normalise_raw_file)
         self.btn_plot.clicked.connect(self.handle_handle_plot)
         self.setMinimumSize(1024, 600)
+
+        self.combo_typo.clear()
+        self.combo_typo.addItems(['Line', 'Scatter'])
+        self.btn_add.clicked.connect(self.handle_user_add_normalised)
+
+
+        self.tab_widget_main.setStyleSheet('''
+            QTabBar::tab:selected { font: bold; }
+            QTabBar::tab{
+             width: 200px;
+             color: white;
+             margin-left: 10px;
+             margin-right: 10px;
+            }
+            QTabBar::tab:first {
+                background-color: red; 
+            }
+            QTabBar::tab:middle {
+                background-color: blue; 
+            }
+            QTabBar::tab:last {
+                background-color: yellow; 
+                color: gray;
+            }
+            /*
+            QTabBar::tab:first:selected {
+                width: 220px;
+            }
+            QTabBar::tab:middle:selected {
+                width: 220px;
+            }
+            QTabBar::tab:last:selected {
+                width: 220px;
+            }
+            */
+        ''')
+
+
+        self.btn_import.setStyleSheet(
+            '''
+            QPushButton{
+            background-color: #F8D800;
+            min-width: 120px;
+            min-height: 40px;
+            border-radius: 10px;
+            }
+            '''
+            )
+        self.btn_clear.setStyleSheet('background-color: #E80505;'
+                                     'color: white;'
+                                      'min-width: 120px;'
+                                      'min-height: 40px;'
+                                      'border-radius: 10px;')
+
+        self.btn_normalise.setStyleSheet('''
+            QPushButton{
+            background-color: #123597;
+            min-width: 120px;
+            min-height: 40px;
+            border-radius: 10px;
+            }
+            ''')
+
+        self.btn_add.setStyleSheet('''
+                    QPushButton{
+                    background-color: #123597;
+                    min-width: 120px;
+                    min-height: 40px;
+                    border-radius: 10px;
+                    color: white;
+                    }
+                    ''')
+        self.btn_normalise.setStyleSheet('''
+            QPushButton{
+            background-color: #F8D800;
+            min-width: 120px;
+            min-height: 40px;
+            border-radius: 10px;
+            }
+            ''')
+        self.btn_plot.setStyleSheet('''
+                    QPushButton{
+                    background-color: #BB4E75;
+                    min-width: 120px;
+                    min-height: 40px;
+                    border-radius: 10px;
+                    }
+                    ''')
 
     def init_table_raw_files(self):
         """Initialize file list table"""
@@ -57,16 +147,16 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
 
         if col == 2:
             self.table_results.setColumnCount(2)
-            self.table_results.setHorizontalHeaderLabels(['Wave', 'Spectra'])
+            self.table_results.setHorizontalHeaderLabels(['Wavelength', 'Spectra'])
         elif col == 3:
             self.table_results.setColumnCount(2)
-            self.table_results.setHorizontalHeaderLabels(['Wave', 'Spectra 1', 'Spectra 2'])
+            self.table_results.setHorizontalHeaderLabels(['Wavelength', 'Spectra 1', 'Spectra 2'])
         elif col == 4:
             self.table_results.setColumnCount(2)
-            self.table_results.setHorizontalHeaderLabels(['Wave', 'Spectra 1', 'Spectra 2', 'Spectra 3'])
+            self.table_results.setHorizontalHeaderLabels(['Wavelength', 'Spectra 1', 'Spectra 2', 'Spectra 3'])
         else:
             self.table_results.setColumnCount(2)
-            self.table_results.setHorizontalHeaderLabels(['X', 'N'])
+            self.table_results.setHorizontalHeaderLabels(['Wavelength', 'Spectra'])
 
     def handle_select_and_import_files(self):
         """Process user selection and import txt files"""
@@ -326,21 +416,49 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
     def handle_handle_plot(self):
         """The processing user clicks plot"""
 
-        normalised_results = [data for fp, shift, data, out in self.data_files if out]
-        normalised_files = [out for fp, shift, data, out in self.data_files if out]
+        # normalised_results = [data for fp, shift, data, out in self.data_files if out]
+        # normalised_files = [out for fp, shift, data, out in self.data_files if out]
+        #
+        # if self.data_normalised_file in normalised_files:
+        #     index = normalised_files.index(self.data_normalised_file)
+        #     data = normalised_results[index]
+        #
+        #     self.graphics_view.plot_data(data=data,
+        #                                  title=f'Plot of Normalised {os.path.split(self.data_normalised_file)[1]}')
+        # else:
+        #     self.graphics_view.plot_clear()
+        #     return self.show_warning_message(message='Please choose a normalised file')
 
-        if self.data_normalised_file in normalised_files:
-            index = normalised_files.index(self.data_normalised_file)
-            data = normalised_results[index]
-
+        ct = self.combo_typo.currentText()
+        cf = self.combo_result.currentText()
+        print(
+            f'Type: {ct}; File: {cf}'
+            )
+        if cf:
+            data = read_normalised_data(cf)
             self.graphics_view.plot_data(data=data,
-                                         title=f'Plot of Normalised {os.path.split(self.data_normalised_file)[1]}')
+                                         typo=ct.lower(),
+                                         title=f'Plot of Normalised {os.path.split(cf)[1]}')
         else:
             self.graphics_view.plot_clear()
             return self.show_warning_message(message='Please choose a normalised file')
 
+    def handle_user_add_normalised(self):
+        """Process the data that the user imported already processed"""
+        ls, _ext = QtWidgets.QFileDialog.getOpenFileNames(parent=self, caption='Import Normalised Data Files', directory='.',
+            filter='Txt Data Files(*.txt)')
+        if not ls:
+            return
 
-
+        normalised_files = self.get_files_to_plot()
+        self.combo_result.blockSignals(True)
+        for i in ls:
+            p = os.path.abspath(i)
+            if p in normalised_files:
+                continue
+            self.data_files_to_plot.append(p)
+            self.combo_result.addItems([p])
+        self.combo_result.blockSignals(False)
 
 
 if __name__ == '__main__':
