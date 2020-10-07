@@ -116,7 +116,7 @@ font: 16pt &quot;Courier&quot;;
              <item>
               <widget class="QLabel" name="label_param">
                <property name="text">
-                <string>Wave Offset</string>
+                <string>Wave Shift</string>
                </property>
               </widget>
              </item>
@@ -147,7 +147,14 @@ font: 16pt &quot;Courier&quot;;
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,1,0,0">
+            <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="0,0,1,0,0">
+             <item>
+              <widget class="QPushButton" name="btn_add">
+               <property name="text">
+                <string>Import</string>
+               </property>
+              </widget>
+             </item>
              <item>
               <widget class="QLabel" name="label_result">
                <property name="text">
@@ -159,18 +166,7 @@ font: 16pt &quot;Courier&quot;;
               <widget class="QComboBox" name="combo_result"/>
              </item>
              <item>
-              <widget class="QComboBox" name="combo_typo">
-               <item>
-                <property name="text">
-                 <string>Scatter</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Line</string>
-                </property>
-               </item>
-              </widget>
+              <widget class="QComboBox" name="combo_typo"/>
              </item>
              <item>
               <widget class="QPushButton" name="btn_plot">
