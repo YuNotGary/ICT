@@ -17,7 +17,7 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
         self.setWindowTitle(app_name)  # window title
         self.label_header.setText(app_name)
 
-        self.data_files_to_plot = []
+        self.data_files_to_plot = []  # store a list of normalised files those imported by user manually
         self.data_files = []
         # Create a new variable storage file path and data
         self.data_current_raw_file: str = None
@@ -26,6 +26,7 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
 
         self.init_table_raw_files()
         self.init_table_results()
+        self.init_table_nf()
 
         # A click event that binds the import
         self.btn_import.clicked.connect(self.handle_select_and_import_files)
@@ -44,16 +45,17 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
 
         self.combo_typo.clear()
         self.combo_typo.addItems(['Line', 'Scatter'])
-        self.btn_add.clicked.connect(self.handle_user_add_normalised)
-
+        self.btn_inf.clicked.connect(self.handle_user_add_normalised)
 
         self.tab_widget_main.setStyleSheet('''
-            QTabBar::tab:selected { font: bold; }
+            QTabBar::tab:selected { font: 75 14pt "Courier New";}
             QTabBar::tab{
-             width: 200px;
+             width: 300px;
+             height: 30px;
              color: white;
              margin-left: 10px;
              margin-right: 10px;
+             font: 12pt "Courier New";
             }
             QTabBar::tab:first {
                 background-color: red; 
@@ -78,7 +80,6 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
             */
         ''')
 
-
         self.btn_import.setStyleSheet(
             '''
             QPushButton{
@@ -95,6 +96,12 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
                                       'min-height: 40px;'
                                       'border-radius: 10px;')
 
+        self.btn_inc.setStyleSheet('background-color: #E80505;'
+                                     'color: white;'
+                                      'min-width: 120px;'
+                                      'min-height: 40px;'
+                                      'border-radius: 10px;')
+
         self.btn_normalise.setStyleSheet('''
             QPushButton{
             background-color: #123597;
@@ -104,13 +111,13 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
             }
             ''')
 
-        self.btn_add.setStyleSheet('''
+        self.btn_inf.setStyleSheet('''
                     QPushButton{
-                    background-color: #123597;
+                    background-color: yellow;
                     min-width: 120px;
                     min-height: 40px;
                     border-radius: 10px;
-                    color: white;
+                    color: gray;
                     }
                     ''')
         self.btn_normalise.setStyleSheet('''
@@ -130,8 +137,22 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
                     }
                     ''')
 
+        self.btn_inc.clicked.connect(self.init_table_nf)
+
+    def init_table_nf(self):
+        """Initialize normalised file list table"""
+        table_headers = ['Normalised File Path']
+        self.table_nf.clear()  # clear the list
+        self.table_nf.setRowCount(0)  # Initial 0 lines
+        self.table_nf.setColumnCount(len(table_headers))  # Three columns show file status
+        #  Set the text displayed in the horizontal header in order
+        self.table_nf.setHorizontalHeaderLabels(table_headers)
+        self.table_nf.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+
+        self.data_files_to_plot = []  # clear normalised files those imported by user manually
+
     def init_table_raw_files(self):
-        """Initialize file list table"""
+        """Initialize raw file list table"""
         table_headers = ['File Name', 'File Path']
         self.table_files.clear()  # clear the list
         self.table_files.setRowCount(0)  # Initial 0 lines
@@ -282,16 +303,26 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
 
     def handle_switch_between_tabs(self, index: int):
         """Switch between different TABs"""
-        print('foo')
+        print(index)
         if index == 1:
             self.handle_switch_to_tab_normalise()
 
         elif index == 2:
             self.handle_switch_to_tab_plot()
 
+    def get_files_to_plot(self):
+        """Gather normalised files for plot"""
+        normalised_files = [out for fp, shift, data, out in self.data_files if out]
+
+        if self.data_files_to_plot:
+            normalised_files.extend(self.data_files_to_plot)
+        normalised_files = list(set(normalised_files))
+        normalised_files.sort()
+        return normalised_files
+
     def handle_switch_to_tab_plot(self):
         """Handle Events when switched to tab Plot"""
-        normalised_files = [out for fp, shift, data, out in self.data_files if out]
+        normalised_files = self.get_files_to_plot()
 
         self.combo_result.blockSignals(True)
         self.combo_result.clear()
@@ -392,12 +423,14 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
 
         # example
         # in file: D:\some-path\001.txt
-        # output file or normalised file: D:\some-path\normalised\001.txt
+        # output file or normalised file: D:\some-path\normalised\001_normalised.txt
 
         results = process(fp=the_raw_file, shiftInput=shift)
 
         fd, fn = os.path.split(the_raw_file)
         out_dir = os.path.join(fd, 'normalised')
+        a, b = os.path.splitext(fn)
+        fn = f'{a}_normalised{b}'
         if not os.path.exists(out_dir):
             os.makedirs(out_dir, exist_ok=True)
         out_file = os.path.abspath(os.path.join(out_dir, fn))
@@ -451,14 +484,23 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
             return
 
         normalised_files = self.get_files_to_plot()
-        self.combo_result.blockSignals(True)
         for i in ls:
             p = os.path.abspath(i)
-            if p in normalised_files:
+            if p in normalised_files:  # please do not repeat
                 continue
+
+            fn = os.path.split(p)[1]
+            if '_normalised.txt' not in fn.lower():  # a normalised file should be end with "_normalised.txt"
+                continue
+
             self.data_files_to_plot.append(p)
-            self.combo_result.addItems([p])
-        self.combo_result.blockSignals(False)
+
+            item = QtWidgets.QTableWidgetItem()
+            item.setText(p)
+            item.setFlags(QtCore.Qt.ItemIsEnabled)
+            row_no = self.table_nf.rowCount()
+            self.table_nf.insertRow(row_no)
+            self.table_nf.setItem(row_no, 0, item)
 
 
 if __name__ == '__main__':

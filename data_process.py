@@ -221,6 +221,7 @@ def export_data(data: list, output_path: str):
             f.write('{}\n'.format(','.join(line)))
 
 def read_normalised_data(fp):
+    """read data from a normalised file"""
     data = []
     with open(fp, 'r', encoding='utf-8') as f:
         for line in f:
@@ -229,10 +230,9 @@ def read_normalised_data(fp):
             _ = line.split(',')
             if not _:
                 continue
-            data.append(_)
-            return data
             _ = [float(i) for i in _]
-
+            data.append(_)
+    return data
 
 if __name__ == '__main__':
     fp = 'data/raman_01.txt'

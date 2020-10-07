@@ -17,16 +17,23 @@ class CanvasWidget(_CanvasWidget):
         super().__init__(figure)
         self.ax = figure.add_subplot(111)
 
-    def plot_data(self, data: list, title: str = 'Normalised Spectra Plot'):
-        """plot data"""
+    def plot_data(self, data: list, typo: str, title: str = 'Normalised Spectra Plot'):
+        """
+        Plot Data
+        :param data: the data to plot, a list of many rows, each row has exact same columns.
+        :param typo: ether "line" or "scatter". This param tells you what kind of plot user is expecting.
+        :param title: title of the plot
+        :return:
+        """
 
         # todo： Please paste your plot code here
         # ==============================================
-        # the following as example
 
-        row0 = data[0]
-        cols = len(row0)
-        self.ax.cla()
+
+        row0 = data[0]  # first row, you can know how many columns.
+        cols = len(row0)  # how many columns the "data" has.
+        self.ax.cla()  # clear the plot and get prepared
+        # your plot begins
         if cols == 2:
             wave = [i[0] for i in data]
             sp = [i[1] for i in data]
