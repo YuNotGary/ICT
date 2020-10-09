@@ -44,7 +44,7 @@ class MainApp(QtWidgets.QWidget, Ui_Form):
         self.setMinimumSize(1024, 600)
 
         self.combo_typo.clear()
-        self.combo_typo.addItems(['Line', 'Scatter'])
+        self.combo_typo.addItems(['Scatter', 'Line'])
         self.btn_inf.clicked.connect(self.handle_user_add_normalised)
 
         self.tab_widget_main.setStyleSheet('''
